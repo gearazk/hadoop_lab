@@ -1,16 +1,17 @@
 import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper;
 
-public class MaxTempReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+public class MaxTempMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 	@Override
-	public void reduce(Text key, Iterable<IntWritable> values, Context context)
+	public void map(LongWritable key, Text value, Context context)
 	throws IOException, InterruptedException {
-		int maxTemp = Integer.MIN_VALUE;
-		for (IntWritable value: values) {
-			maxTemp = Math.max(maxTemp, value.get());
-		}
-		context.write(key, new IntWritable(maxTemp));
+		String line = value.toString();
+		String month = line.substring(22,24);
+		int avgTemp;
+		avgTemp = Integer.parseInt(line.substring(95,98));
+		context.write(new Text(month), new IntWritable(avgTemp));
 	}
 }
